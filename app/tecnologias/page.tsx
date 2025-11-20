@@ -1,5 +1,5 @@
-import Image from "next/image";
 import tecnologiasData from "@/app/data/tecnologias.json";
+import TecnologiaCard from "@/app/components/TecnologiaCard";
 
 type Tecnologia = {
   title: string;
@@ -17,28 +17,13 @@ export default function Tecnologias() {
         Tecnologias Exploradas
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
         {tecnologias.map((tec: Tecnologia, index: number) => (
-          <div
+          <TecnologiaCard
             key={index}
-            className="bg-white shadow-md rounded-xl p-5 flex flex-col items-center text-center border hover:shadow-lg transition"
-          >
-            <Image
-              src={`/tecnologias/${tec.image}`}
-              alt={tec.title}
-              width={120}
-              height={120}
-              className="mb-4"
-            />
-
-            <h3 className="text-xl font-semibold mb-2">{tec.title}</h3>
-
-            <p className="text-gray-600 text-sm mb-3">{tec.description}</p>
-
-            <p className="font-bold text-yellow-500">
-              ⭐ {tec.rating}/5
-            </p>
-          </div>
+            title={tec.title}
+            image={tec.image}
+          />
         ))}
       </div>
     </div>
