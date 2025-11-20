@@ -33,8 +33,8 @@ export default function RootLayout({
         <header className="flex flex-col items-center">
           <h1>React & Next.js</h1>
           <nav className="flex gap-4">
-            <link href="/">Intro</link>
-            <link href="/sobre">Sobre</link>
+            <Link href="/">Intro</Link>
+            <Link href="/sobre">Sobre</Link>
             <Link href="/caracteristicas">Características</Link>
             <Link href="/tecnologias">Tecnologias</Link>
           </nav>
