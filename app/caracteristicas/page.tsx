@@ -1,21 +1,24 @@
-const caracteristicas = [
-        'JSX, sintaxe que mistura HTML e JS.',
-        'Componentes, funções que retornam JSX.',
-        'Componentes Reutilizáveis e Modulares.',
-        'Roteamento Automático e APIs.',
-        'Hooks: useState, useEffect e useSWR.',
-        'Renderização Rápida e SEO Friendly.',
-        'TypeScript Seguro e Escalável.',
-        'Comunidade Ativa e Popularidade.'
-    ]
+import Caracteristica from "@/app/components/Caracteristica";
 
-    export default function page(){
-      return (
-        <div>
-          <h2>Caracteristicas do React e Next.js</h2>
-          {caracteristicas.map((caracteristica, i) => {
-            return <li key={i}>{caracteristica}</li>
-          })}
-        </div>
-      )
-    }
+const listaCaracteristicas = [
+  "Fácil de usar",
+  "Modular",
+  "Responsivo",
+  "Moderno",
+  "Rápido",
+  "Flexível",
+];
+
+export default function CaracteristicasPage() {
+  return (
+    <div className="flex flex-col gap-4 p-8">
+      <h2 className="text-2xl font-bold mb-4">Características</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {listaCaracteristicas.map((car, index) => (
+          <Caracteristica key={index} caracteristica={car} index={index} />
+        ))}
+      </div>
+    </div>
+  );
+}
