@@ -21,9 +21,11 @@ export default function Tecnologias() {
         {tecnologias.map((tec: Tecnologia, index: number) => (
           <TecnologiaCard
             key={index}
+            id={index}
             title={tec.title}
             image={tec.image}
           />
+
         ))}
       </div>
     </div>
