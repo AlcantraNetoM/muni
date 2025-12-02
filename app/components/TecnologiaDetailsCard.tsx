@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ContadorPersonalizado from "@/app/components/ContadorPersonalizado";
 
 interface Tecnologia {
     title: string;
@@ -7,7 +8,11 @@ interface Tecnologia {
     rating: number;
 }
 
-export default function TecnologiaDetailsCard({ tecnologia }: { tecnologia: Tecnologia }) {
+export default function TecnologiaDetailsCard({
+    tecnologia,
+}: {
+    tecnologia: Tecnologia;
+}) {
     return (
         <div className="bg-white shadow-md rounded-xl p-6 w-96 flex flex-col items-center text-center border">
 
@@ -23,11 +28,17 @@ export default function TecnologiaDetailsCard({ tecnologia }: { tecnologia: Tecn
                 {tecnologia.title}
             </h2>
 
-            <p className="text-gray-600 mb-4">{tecnologia.description}</p>
+            <p className="text-gray-600 mb-4">
+                {tecnologia.description}
+            </p>
 
-            <p className="font-bold text-yellow-500 text-lg">
+            <p className="font-bold text-yellow-500 text-lg mb-4">
                 ⭐ {tecnologia.rating}/5
             </p>
+
+            {/* Botão de Likes */}
+            <ContadorPersonalizado title={tecnologia.title} />
+
         </div>
     );
 }

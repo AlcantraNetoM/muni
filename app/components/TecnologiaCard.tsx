@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ContadorPersonalizado from "@/app/components/ContadorPersonalizado";
 
 interface TecnologiaCardProps {
     title: string;
@@ -9,17 +10,25 @@ interface TecnologiaCardProps {
 
 export default function TecnologiaCard({ title, image, id }: TecnologiaCardProps) {
     return (
-        <Link href={`/tecnologias/${id}`}>
-            <div className="bg-white shadow-md w-48 h-48 rounded-xl flex flex-col items-center justify-center p-4 border hover:shadow-lg transition cursor-pointer">
-                <Image
-                    src={`/tecnologias/${image}`}
-                    alt={title}
-                    width={80}
-                    height={80}
-                    className="mb-3"
-                />
-                <h3 className="text-center font-semibold">{title}</h3>
-            </div>
-        </Link>
+        <div className="flex flex-col items-center gap-2">
+
+            {/* Card clicável */}
+            <Link href={`/tecnologias/${id}`}>
+                <div className="bg-white shadow-md w-48 h-48 rounded-xl flex flex-col items-center justify-center p-4 border hover:shadow-lg transition cursor-pointer">
+                    <Image
+                        src={`/tecnologias/${image}`}
+                        alt={title}
+                        width={80}
+                        height={80}
+                        className="mb-3"
+                    />
+                    <h3 className="text-center font-semibold">{title}</h3>
+                </div>
+            </Link>
+
+            {/* Botão de Likes */}
+            <ContadorPersonalizado title={title} />
+
+        </div>
     );
 }
