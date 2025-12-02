@@ -22,6 +22,7 @@ async function getCategorias(): Promise<Categoria[]> {
 }
 
 export default async function CategoriasPage() {
+
     const categorias = await getCategorias();
 
     return (
@@ -29,7 +30,9 @@ export default async function CategoriasPage() {
 
             <h1>Categorias</h1>
 
-            {categorias.length === 0 && <p>Nenhuma categoria encontrada.</p>}
+            {categorias.length === 0 && (
+                <p>Nenhuma categoria encontrada.</p>
+            )}
 
             <div className="grid grid-cols-3 gap-4">
                 {categorias.map((c) => (

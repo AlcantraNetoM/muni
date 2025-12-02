@@ -42,12 +42,16 @@ export default async function ProdutoPage({
 
     const produto = await getProduto(params.id);
 
-    if (!produto) return <h1>Produto não encontrado</h1>;
+    if (!produto) {
+        return <h1>Produto não encontrado</h1>;
+    }
 
     return (
         <div className="flex flex-col gap-4">
 
-            <h1>{produto.name}</h1>
+            <h1 className="text-2xl font-bold">
+                {produto.name}
+            </h1>
 
             <Image
                 src={produto.image}
