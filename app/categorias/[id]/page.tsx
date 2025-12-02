@@ -1,11 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 
-async function getProdutosCategoria(id: string) {
+interface Produto {
+    id: number;
+    name: string;
+    price: number;
+    image: string;
+}
+
+async function getProdutosCategoria(id: string): Promise<Produto[]> {
     const res = await fetch(
-        `https://deisishop.pythonanywhere.com/api/categories/${id}/products/`,
+        `https://deisishop.pythonanywhere.com/api/categorias/${id}/produtos/`,
         { cache: "no-store" }
     );
+
+    if (!res.ok) {
+        console.error("Erro ao buscar produtos da categoria:", res.status);
+        return [];
+    }
+
     return res.json();
 }
 
@@ -19,14 +32,19 @@ export default async function CategoriaDetalhePage({
 
     return (
         <div>
+
             <h1>Produtos da categoria</h1>
+
+            {produtos.length === 0 && (
+                <p>Nenhum produto nesta categoria.</p>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
 
-                {produtos.map((p: any) => (
-                    <Link href={`/produtos/${p.id}`} key={p.id}>
+                {produtos.map((p) => (
+                    <Link key={p.id} href={`/produtos/${p.id}`}>
 
-                        <div className="border rounded-lg p-3 hover:shadow-md">
+                        <div className="border p-4 rounded hover:shadow">
 
                             <Image
                                 src={p.image}
@@ -44,6 +62,7 @@ export default async function CategoriaDetalhePage({
                 ))}
 
             </div>
+
         </div>
     );
 }
