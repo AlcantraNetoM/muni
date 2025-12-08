@@ -1,77 +1,47 @@
-import Image from "next/image";
-import { redirect } from "next/navigation";
+"use client";
 
-interface Produto {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-}
+import useSWR from "swr";
+import { Product } from "@/models/interfaces";
+import ProdutoDetalhe from "@/app/components/ProdutoDetalhe";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
-async function getProduto(id: string): Promise<Produto | null> {
-    const res = await fetch(
-        `https://deisishop.pythonanywhere.com/api/produtos/${id}/`,
-        { cache: "no-store" }
+const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Erro ao obter produto");
+    return res.json();
+};
+
+export default function ProdutoPage({ params }: { params: { id: string } }) {
+
+    const { data, error, isLoading } = useSWR<Product>(
+        `https://deisishop.pythonanywhere.com/products/${params.id}`,
+        fetcher
     );
 
-    if (!res.ok) {
-        console.error("Erro ao buscar produto:", res.status);
-        return null;
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-[60vh]">
+                <Loader2 className="w-10 h-10 animate-spin" />
+            </div>
+        );
     }
 
-    return res.json();
-}
-
-async function apagarProduto(id: string) {
-    "use server";
-
-    await fetch(
-        `https://deisishop.pythonanywhere.com/api/produtos/${id}/`,
-        { method: "DELETE" }
-    );
-
-    redirect("/produtos");
-}
-
-export default async function ProdutoPage({
-    params,
-}: {
-    params: { id: string };
-}) {
-
-    const produto = await getProduto(params.id);
-
-    if (!produto) {
-        return <h1>Produto não encontrado</h1>;
+    if (error || !data) {
+        return <p className="text-center text-red-500">Produto não encontrado.</p>;
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="p-8 flex flex-col items-center gap-6">
 
-            <h1 className="text-2xl font-bold">
-                {produto.name}
-            </h1>
+            <ProdutoDetalhe produto={data} />
 
-            <Image
-                src={produto.image}
-                alt={produto.name}
-                width={250}
-                height={250}
-                priority
-            />
-
-            <p>{produto.description}</p>
-
-            <p className="font-bold">
-                {produto.price} €
-            </p>
-
-            <form action={apagarProduto.bind(null, params.id)}>
-                <button className="bg-red-500 px-4 py-2 text-white rounded">
-                    Apagar produto
-                </button>
-            </form>
+            <Link
+                href="/produtos"
+                className="bg-blue-500 px-6 py-2 text-white rounded hover:bg-blue-600 transition"
+            >
+                Voltar à lista
+            </Link>
 
         </div>
     );
