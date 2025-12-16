@@ -8,14 +8,15 @@ import { Loader2 } from "lucide-react";
 
 const fetcher = async (url: string) => {
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Erro ao obter produtos");
+    if (!res.ok) {
+        throw new Error("Erro ao obter produtos");
+    }
     return res.json();
 };
 
 export default function ProdutosPage() {
-
     const { data, error, isLoading } = useSWR<Product[]>(
-        "https://deisishop.pythonanywhere.com/",
+        "https://deisishop.pythonanywhere.com/products/",
         fetcher
     );
 
@@ -28,33 +29,43 @@ export default function ProdutosPage() {
     const [coupon, setCoupon] = useState("");
     const [purchaseResult, setPurchaseResult] = useState<any>(null);
 
-    //load cart
     useEffect(() => {
         const stored = localStorage.getItem("cart");
-        if (stored) setCart(JSON.parse(stored));
+        if (stored) {
+            setCart(JSON.parse(stored));
+        }
     }, []);
 
-    //save cart
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cart));
     }, [cart]);
 
-    //filter + sort
     useEffect(() => {
+        if (!data) {
+            return;
+        }
 
-        if (!data) return;
+        let result = data.filter((p) => {
+            return p.title.toLowerCase().includes(search.toLowerCase());
+        });
 
-        let result = data.filter((p) =>
-            p.title.toLowerCase().includes(search.toLowerCase())
-        );
+        if (sortOption === "name-asc") {
+            result.sort((a, b) => a.title.localeCompare(b.title));
+        }
 
-        if (sortOption === "name-asc") result.sort((a, b) => a.title.localeCompare(b.title));
-        if (sortOption === "name-desc") result.sort((a, b) => b.title.localeCompare(a.title));
-        if (sortOption === "price-asc") result.sort((a, b) => a.price - b.price);
-        if (sortOption === "price-desc") result.sort((a, b) => b.price - a.price);
+        if (sortOption === "name-desc") {
+            result.sort((a, b) => b.title.localeCompare(a.title));
+        }
+
+        if (sortOption === "price-asc") {
+            result.sort((a, b) => a.price - b.price);
+        }
+
+        if (sortOption === "price-desc") {
+            result.sort((a, b) => b.price - a.price);
+        }
 
         setFilteredData(result);
-
     }, [search, sortOption, data]);
 
     const addToCart = (produto: Product) => {
@@ -62,35 +73,35 @@ export default function ProdutosPage() {
     };
 
     const removeFromCart = (id: number) => {
-        setCart(cart.filter(p => p.id !== id));
+        setCart(cart.filter((p) => p.id !== id));
     };
 
     const total = cart.reduce((sum, p) => sum + p.price, 0);
 
-    //COMPRA
     const buyProducts = async () => {
-
-        if (cart.length === 0) return;
+        if (cart.length === 0) {
+            return;
+        }
 
         try {
+            const ids = cart.map((p) => p.id);
 
-            const ids = cart.map(p => p.id);
-
-            const res = await fetch("https://deisishop.pythonanywhere.com/compra/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    products: ids,
-                    estudante: isStudent,
-                    cupao: coupon || null
-                })
-            });
+            const res = await fetch(
+                "https://deisishop.pythonanywhere.com/shop/buy",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        products: ids,
+                        estudante: isStudent,
+                        cupao: coupon || null,
+                    }),
+                }
+            );
 
             const data = await res.json();
-
             setPurchaseResult(data);
             setCart([]);
-
         } catch {
             setPurchaseResult({ error: "Erro ao processar compra" });
         }
@@ -99,19 +110,22 @@ export default function ProdutosPage() {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
-                <Loader2 className="animate-spin w-10 h-10" />
+                <Loader2 className="w-10 h-10 animate-spin" />
             </div>
         );
     }
 
-    if (error) return <p className="text-red-500 text-center">Erro ao obter produtos.</p>;
+    if (error) {
+        return (
+            <p className="text-red-500 text-center">
+                Erro ao obter produtos.
+            </p>
+        );
+    }
 
     return (
         <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* PRODUTOS */}
             <div className="lg:col-span-2">
-
                 <h2 className="text-3xl mb-6 text-center">
                     DEISI SHOP
                 </h2>
@@ -136,7 +150,7 @@ export default function ProdutosPage() {
                 </select>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {filteredData.map(product => (
+                    {filteredData.map((product) => (
                         <ProdutoCard
                             key={product.id}
                             produto={product}
@@ -144,20 +158,19 @@ export default function ProdutosPage() {
                         />
                     ))}
                 </div>
-
             </div>
 
-            {/* CARRINHO */}
             <div className="border rounded-xl p-5 flex flex-col">
-
                 <h3 className="text-2xl mb-4">
                     Carrinho
                 </h3>
 
-                {cart.length === 0 && <p>Carrinho vazio</p>}
+                {cart.length === 0 && (
+                    <p>Carrinho vazio</p>
+                )}
 
                 <div className="flex flex-col gap-4">
-                    {cart.map(product => (
+                    {cart.map((product) => (
                         <ProdutoCard
                             key={product.id}
                             produto={product}
@@ -172,14 +185,14 @@ export default function ProdutosPage() {
                     Total: {total.toFixed(2)} €
                 </p>
 
-                {/* Checkout */}
                 <div className="mt-4">
-
                     <label className="flex items-center gap-2 mb-3">
                         <input
                             type="checkbox"
                             checked={isStudent}
-                            onChange={(e) => setIsStudent(e.target.checked)}
+                            onChange={(e) =>
+                                setIsStudent(e.target.checked)
+                            }
                         />
                         Estudante DEISI
                     </label>
@@ -197,7 +210,6 @@ export default function ProdutosPage() {
                     >
                         Comprar
                     </button>
-
                 </div>
 
                 {purchaseResult && (
@@ -205,9 +217,7 @@ export default function ProdutosPage() {
                         {JSON.stringify(purchaseResult, null, 2)}
                     </pre>
                 )}
-
             </div>
-
         </div>
     );
 }

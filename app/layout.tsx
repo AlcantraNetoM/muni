@@ -24,11 +24,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const data = new Date();
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="flex flex-col justify-start gap-4 p-20 items-center min-h-screen">
 
         {/* HEADER */}
@@ -44,7 +41,6 @@ export default function RootLayout({
             <Link href="/input">Input</Link>
             <Link href="/produtos">Produtos</Link>
             <Link href="/categorias">Categorias</Link>
-
           </nav>
         </header>
 
@@ -54,9 +50,8 @@ export default function RootLayout({
         </main>
 
         {/* FOOTER */}
-        <footer className="flex flex-col items-center gap-2">
-          <span>DIW {data.getFullYear()}</span>
-          <Relogio />
+        <footer>
+          DIW 2025 <Relogio />
         </footer>
 
       </body>
