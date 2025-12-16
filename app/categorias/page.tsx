@@ -1,20 +1,17 @@
-import Image from "next/image";
 import Link from "next/link";
 
 interface Categoria {
     id: number;
     name: string;
-    logo: string;
 }
 
 async function getCategorias(): Promise<Categoria[]> {
     const res = await fetch(
-        "https://deisishop.pythonanywhere.com/api/categorias/",
+        "https://deisishop.pythonanywhere.com/categories/",
         { cache: "no-store" }
     );
 
     if (!res.ok) {
-        console.error("Erro ao buscar categorias:", res.status);
         return [];
     }
 
@@ -22,40 +19,32 @@ async function getCategorias(): Promise<Categoria[]> {
 }
 
 export default async function CategoriasPage() {
-
     const categorias = await getCategorias();
 
     return (
-        <div>
-
-            <h1>Categorias</h1>
+        <div className="p-8">
+            <h1 className="text-3xl mb-6 text-center">
+                Categorias
+            </h1>
 
             {categorias.length === 0 && (
-                <p>Nenhuma categoria encontrada.</p>
+                <p className="text-center">
+                    Nenhuma categoria encontrada.
+                </p>
             )}
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {categorias.map((c) => (
-                    <Link key={c.id} href={`/categorias/${c.id}`}>
-
-                        <div className="border p-4 rounded text-center hover:shadow">
-
-                            <Image
-                                src={c.logo}
-                                alt={c.name}
-                                width={120}
-                                height={120}
-                                priority
-                            />
-
-                            <p>{c.name}</p>
-
-                        </div>
-
-                    </Link>
+                    <div key={c.id}>
+                        <Link
+                            href={`/categorias/${c.id}`}
+                            className="border p-6 rounded text-center hover:shadow block"
+                        >
+                            {c.name}
+                        </Link>
+                    </div>
                 ))}
             </div>
-
         </div>
     );
 }
