@@ -1,56 +1,78 @@
-import { Product } from "@/models/interfaces";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+"use client";
 
-type ProdutoCardProps = {
-    produto: Product;
-    onAdd?: (produto: Product) => void;
-    onRemove?: (id: number) => void;
-};
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Product } from "@/models/interfaces";
 
 export default function ProdutoCard({
     produto,
     onAdd,
-    onRemove,
-}: ProdutoCardProps) {
+    onRemove
+}: {
+    produto: Product;
+    onAdd?: (p: Product) => void;
+    onRemove?: (id: number) => void;
+}) {
+    const [favorito, setFavorito] = useState(false);
+
+    useEffect(() => {
+        const guardados = localStorage.getItem("favoritos");
+        if (guardados) {
+            const ids = JSON.parse(guardados);
+            setFavorito(ids.includes(produto.id));
+        }
+    }, [produto.id]);
+
+    function alternarFavorito() {
+        const guardados = localStorage.getItem("favoritos");
+        let ids: number[] = guardados ? JSON.parse(guardados) : [];
+
+        if (ids.includes(produto.id)) {
+            ids = ids.filter((id) => id !== produto.id);
+            setFavorito(false);
+        } else {
+            ids.push(produto.id);
+            setFavorito(true);
+        }
+
+        localStorage.setItem("favoritos", JSON.stringify(ids));
+    }
+
     return (
-        <Card className="hover:shadow-lg transition">
+        <div className="border p-4 rounded flex flex-col gap-2">
 
-            <CardHeader>
-                <CardTitle className="text-sm min-h-[40px]">
-                    {produto.title}
-                </CardTitle>
-            </CardHeader>
+            <button onClick={alternarFavorito} className="self-end text-xl">
+                {favorito ? "Coracao vermelho" : "Coracao branco"}
+            </button>
 
-            <CardContent className="flex flex-col items-center gap-4">
+            <Image
+                src={`https://deisishop.pythonanywhere.com${produto.image}`}
+                alt={produto.title}
+                width={150}
+                height={150}
+            />
 
-                <Image
-                    src={produto.image}
-                    alt={produto.title}
-                    width={140}
-                    height={140}
-                />
+            <h3>{produto.title}</h3>
+            <p>{produto.price} €</p>
 
-                {/* BOTÕES */}
-                {onAdd && (
-                    <button
-                        onClick={() => onAdd(produto)}
-                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
-                    >
-                        Adicionar
-                    </button>
-                )}
+            {onAdd && (
+                <button
+                    onClick={() => onAdd(produto)}
+                    className="bg-blue-500 text-white p-1 rounded"
+                >
+                    Adicionar
+                </button>
+            )}
 
-                {onRemove && (
-                    <button
-                        onClick={() => onRemove(produto.id)}
-                        className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-                    >
-                        Remover
-                    </button>
-                )}
+            {onRemove && (
+                <button
+                    onClick={() => onRemove(produto.id)}
+                    className="bg-red-500 text-white p-1 rounded"
+                >
+                    Remover
+                </button>
+            )}
 
-            </CardContent>
-        </Card>
+        </div>
     );
 }
