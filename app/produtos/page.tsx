@@ -58,11 +58,11 @@ export default function ProdutosPage() {
         }
 
         if (sortOption === "price-asc") {
-            result.sort((a, b) => a.price - b.price);
+            result.sort((a, b) => Number(a.price) - Number(b.price));
         }
 
         if (sortOption === "price-desc") {
-            result.sort((a, b) => b.price - a.price);
+            result.sort((a, b) => Number(b.price) - Number(a.price));
         }
 
         setFilteredData(result);
@@ -76,7 +76,9 @@ export default function ProdutosPage() {
         setCart(cart.filter((p) => p.id !== id));
     };
 
-    const total = cart.reduce((sum, p) => sum + p.price, 0);
+    const total = cart.reduce((sum, p) => {
+        return sum + Number(p.price);
+    }, 0);
 
     const buyProducts = async () => {
         if (cart.length === 0) {
@@ -190,9 +192,7 @@ export default function ProdutosPage() {
                         <input
                             type="checkbox"
                             checked={isStudent}
-                            onChange={(e) =>
-                                setIsStudent(e.target.checked)
-                            }
+                            onChange={(e) => setIsStudent(e.target.checked)}
                         />
                         Estudante DEISI
                     </label>
