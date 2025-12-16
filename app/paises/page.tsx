@@ -1,74 +1,89 @@
 "use client";
 
 import useSWR from "swr";
-import { useState, useEffect } from "react";
-import Pais from "@/app/components/Paises";
-import { Pais as PaisInterface } from "@/models/interfaces";
+import { useEffect, useState } from "react";
+import PaisCard from "@/app/components/PaisCard";
+import { Pais } from "@/models/interfaces";
 
-const fetcher = (url: string) =>
-    fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function PaisesPage() {
-    const { data, error } = useSWR<PaisInterface[]>(
+
+    const { data, error, isLoading } = useSWR(
         "/data/paises.json",
         fetcher
     );
 
     const [pesquisa, setPesquisa] = useState("");
-    const [ordenar, setOrdenar] = useState("");
-    const [lista, setLista] = useState<PaisInterface[]>([]);
+    const [ordenacao, setOrdenacao] = useState("");
+    const [paisesFiltrados, setPaisesFiltrados] = useState<Pais[]>([]);
 
     useEffect(() => {
+
         if (!data) {
             return;
         }
 
-        let resultado = data;
+        let lista: Pais[] = data.map((p: any) => ({
+            nome: p.name.common,
+            area: p.area,
+            populacao: p.population
+        }));
 
         if (pesquisa !== "") {
-            resultado = resultado.filter((p) =>
+            lista = lista.filter(p =>
                 p.nome.toLowerCase().includes(pesquisa.toLowerCase())
             );
         }
 
-        if (ordenar === "mais") {
-            resultado = [...resultado].sort(
-                (a, b) => b.populacao - a.populacao
-            );
+        if (ordenacao === "pop-asc") {
+            lista.sort((a, b) => a.populacao - b.populacao);
         }
 
-        if (ordenar === "menos") {
-            resultado = [...resultado].sort(
-                (a, b) => a.populacao - b.populacao
-            );
+        if (ordenacao === "pop-desc") {
+            lista.sort((a, b) => b.populacao - a.populacao);
         }
 
-        setLista(resultado);
-    }, [pesquisa, ordenar, data]);
+        setPaisesFiltrados(lista);
+
+    }, [data, pesquisa, ordenacao]);
+
+    if (isLoading) {
+        return <p>A carregar países...</p>;
+    }
+
+    if (error) {
+        return <p>Erro ao carregar países.</p>;
+    }
 
     return (
-        <div>
+        <div className="p-6">
 
-            <h1>Países</h1>
+            <h1 className="text-2xl mb-4">Países</h1>
 
             <input
                 value={pesquisa}
                 onChange={(e) => setPesquisa(e.target.value)}
                 placeholder="Pesquisar país"
+                className="border p-2 mb-4 w-full"
             />
 
             <select
-                value={ordenar}
-                onChange={(e) => setOrdenar(e.target.value)}
+                value={ordenacao}
+                onChange={(e) => setOrdenacao(e.target.value)}
+                className="border p-2 mb-6 w-full"
             >
-                <option value="">Ordenar</option>
-                <option value="mais">Mais população</option>
-                <option value="menos">Menos população</option>
+                <option value="">Ordenar por população</option>
+                <option value="pop-asc">Menor população</option>
+                <option value="pop-desc">Maior população</option>
             </select>
 
-            <div>
-                {lista.map((pais) => (
-                    <Pais key={pais.nome} pais={pais} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {paisesFiltrados.map((pais) => (
+                    <PaisCard
+                        key={pais.nome}
+                        pais={pais}
+                    />
                 ))}
             </div>
 
