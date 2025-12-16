@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 
 interface Categoria {
     id: number;
@@ -35,14 +36,14 @@ export default async function CategoriasPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {categorias.map((c) => (
-                    <div key={c.id}>
+                    <Fragment key={c.id}>
                         <Link
                             href={`/categorias/${c.id}`}
                             className="border p-6 rounded text-center hover:shadow block"
                         >
                             {c.name}
                         </Link>
-                    </div>
+                    </Fragment>
                 ))}
             </div>
         </div>
